@@ -20,5 +20,5 @@ from DLSCL import views as home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',home.get_home)
+    path('',home.get_home),
 ]
