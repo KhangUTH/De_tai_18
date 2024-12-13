@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Kho</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+        
+        .header {
+            background-image: linear-gradient(to right, rgb(160, 122, 122), rgb(28, 201, 161),#13a1b1);
+            color: rgb(235, 228, 228);
+            padding: 10px 0;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+        }
+        
+        .toolbar {
+            background-image: linear-gradient(to right, rgb(160, 122, 122), rgb(28, 201, 161),#13a1b1);
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .toolbar-item {
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        
+        .toolbar-item:hover {
+            background-color: #13a1b1;
+        }
+        
+        .content {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            height: 80%;
+            overflow: auto;
+        }
+        
+        .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        
+        .close-popup:hover {
+            color: red;
+        }
+        
+        .show-popup {
+            display: block;
+        }
+        
+        /* CSS để tạo giao diện quản lý sản phẩm */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .product-item {
+            background-color: #f7f7f7;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .product-quantity {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .out-of-stock {
+            color: #f00;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Quản Lý Kho</h1>
+    </div>
+    <div class="toolbar">
+        <div class="toolbar-item" id="quan-ly-san-pham">Quản Lý Sản Phẩm</div>
+        <div class="toolbar-item" id="quan-ly-ton-kho">Quản Lý Tồn Kho</div>
+        <div class="toolbar-item" id="nhap-xuat-hang">Nhập Xuất Hàng</div>
+        <div class="toolbar-item" id="bao-cao-ton-kho">Báo Cáo Tồn Kho</div>
+    </div>
+    <div class="content">
+        <!-- Nội dung <-- Nội dung sẽ được hiển thị ở đây -->
+    </div>
+    <div class="popup" id="popup-quan-ly-san-pham">
+        <div class="popup-content">
+            <div class="close-popup">&times;</div>
+            <h2>Quản Lý Sản Phẩm</h2>
+            <div class="product-grid">
+                <!-- Sản phẩm 1 -->
+                <div class="product-item">
+                    <img src="https://bcabadminton.org/wp-content/uploads/2020/06/vot-cau-long-2-3.jpg.webp" alt="Vợt cầu lông" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Vợt cầu lông</p>
+                        <p class="product-quantity">Số lượng: 50 cây</p>
+                    </div>
+                </div>
+                
+                <!-- Sản phẩm 2 -->
+                <div class="product-item">
+                    <img src="https://shopvnb.com/uploads/images/tin_tuc/qua-cau-long-phu-kien-noi-bat-va-tinh-te-nhat-cua-cau-long-1.webp" alt="Vợt cầu lông" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Trái cầu lông</p>
+                        <p class="product-quantity">Số lượng: 200 trái</p>
+                    </div>
+                </div>
+                
+                <!-- Sản phẩm 3 -->
+                <div class="product-item">
+                    <img src="https://cdn.shopvnb.com/uploads/san_pham/giay-cau-long-yonex-shb65x3-trang-do-chinh-hang-4.webp" alt="Vợt cầu lông" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Giày cầu lông</p>
+                        <p class="product-quantity">Số lượng: 30 đôi</p>
+                    </div>
+                </div>
+                
+                <!-- Sản phẩm 4 -->
+                <div class="product-item">
+                    <img src="https://cdn.tgdd.vn/Files/2017/04/12/971458/cach-lua-chon-va-su-dung-nuoc-ngot-khong-gay-hai-suc-khoe-2_760x506.jpg" alt="Vợt cầu lông" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Nước ngọt</p>
+                        <p class="product-quantity">Số lượng: 43 thùng</p>
+                    </div>
+                </div>
+                
+                <!-- Sản phẩm 5 -->
+                <div class="product-item">
+                    <img src="https://th.bing.com/th/id/OIP.mlk8IHn0nh99prmrWSf83QHaFj?w=278&h=209&c=7&pcl=1b1a19&r=0&o=5&dpr=1.3&pid=1.7" alt="Vợt cầu lông" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Nước lọc</p>
+                        <p class="product-quantity">Số lượng: 150 thùng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="popup" id="popup-quan-ly-ton-kho">
+        <div class="popup-content">
+            <div class="close-popup">&times;</div>
+            <h2>Quản Lý Tồn Kho Sân Cầu Lông</h2>
+            <div class="product-grid">
+                <!-- Sản phẩm 1 -->
+                <div class="product-item">
+                    <img src="https://bcabadminton.org/wp-content/uploads/2020/06/vot-cau-long-2-3.jpg.webp" alt="Vợt cầu lông" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Vợt cầu lông</p>
+                        <p class="product-quantity">Số lượng: 50 cây</p>
+                        <p class="product-damage">Hư hỏng: Không</p>
+                        <p class="product-date">Ngày nhập: 01/12/2024</p>
+                    </div>
+                </div>
+                <!-- Sản phẩm 2 -->
+                <div class="product-item">
+                    <img src="https://shopvnb.com/uploads/images/tin_tuc/qua-cau-long-phu-kien-noi-bat-va-tinh-te-nhat-cua-cau-long-1.webp" alt="Cầu lông" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Trái cầu lông</p>
+                        <p class="product-quantity">Số lượng: 200 trái</p>
+                        <p class="product-damage">Hư hỏng: 10 quả</p>
+                        <p class="product-date">Ngày nhập: 28/11/2024</p>
+                    </div>
+                </div>
+                <!-- Sản phẩm 3 -->
+                <div class="product-item">
+                    <img src="https://cdn.shopvnb.com/uploads/san_pham/giay-cau-long-yonex-shb65x3-trang-do-chinh-hang-4.webp" alt="Giày cầu lông" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Giày cầu lông</p>
+                        <p class="product-quantity">Số lượng: 30 đôi</p>
+                        <p class="product-damage">Hư hỏng: Không</p>
+                        <p class="product-date">Ngày nhập: 25/11/2024</p>
+                    </div>
+                </div>
+                <!-- Sản phẩm 4 -->
+                <div class="product-item">
+                    <img src="https://thethaothienlong.vn/wp-content/uploads/2022/04/luoi-cau-long-bao-nhieu-tien-2.jpg" alt="Lưới cầu lông" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Lưới cầu lông</p>
+                        <p class="product-quantity">Số lượng: 5 bộ</p>
+                        <p class="product-damage">Hư hỏng: 1 bộ</p>
+                        <p class="product-date">Ngày nhập: 20/11/2024</p>
+                    </div>
+                </div>
+                <!-- Sản phẩm 5 -->
+                <div class="product-item">
+                    <img src="https://cdn.tgdd.vn/Files/2017/04/12/971458/cach-lua-chon-va-su-dung-nuoc-ngot-khong-gay-hai-suc-khoe-2_760x506.jpg" alt="Nước ngọt" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Nước ngọt</p>
+                        <p class="product-quantity">Số lượng: 43 thùng</p>
+                        <p class="product-damage">Hư hỏng: Không</p>
+                        <p class="product-date">Ngày nhập: 02/12/2024</p>
+                    </div>
+                </div>
+                <!-- Sản phẩm 6 -->
+                <div class="product-item">
+                    <img src="https://th.bing.com/th/id/OIP.mlk8IHn0nh99prmrWSf83QHaFj?w=278&h=209&c=7&pcl=1b1a19&r=0&o=5&dpr=1.3&pid=1.7" alt="Nước lọc" style="width: 150px; height: auto;">
+                    <div class="product-info">
+                        <p class="product-name">Nước lọc</p>
+                        <p class="product-quantity">Số lượng: 150 thùng</p>
+                        <p class="product-damage">Hư hỏng: Không</p>
+                        <p class="product-date">Ngày nhập: 03/12/2024</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="popup" id="popup-nhap-xuat-hang">
+        <div class="popup-content">
+            <div class="close-popup">&times;</div>
+            <h2>Nhập Xuất Hàng</h2>
+            <form class="input-form">
+                <label for="product-name">Tên Sản Phẩm</label>
+                <input type="text" id="product-name" placeholder="Nhập tên sản phẩm">
+
+                <label for="quantity">Số Lượng</label>
+                <input type="number" id="quantity" placeholder="Nhập số lượng">
+
+                <label for="action-type">Loại Giao Dịch</label>
+                <select id="action-type">
+                    <option value="nhap">Nhập Kho</option>
+                    <option value="xuat">Xuất Kho</option>
+                </select>
+
+                <label for="date">Ngày Giao Dịch</label>
+                <input type="date" id="date">
+
+                <button type="button" id="submit-transaction">Thực Hiện Giao Dịch</button>
+            </form>
+        </div>
+    </div>
+    <div class="popup" id="popup-bao-cao-ton-kho">
+        <div class="popup-content">
+            <div class="close-popup">&times;</div>
+            <h2>Báo Cáo Tồn Kho</h2>
+            <div class="popup" id="popup-bao-cao-ton-kho">
+        <div class="popup-content">
+            <div class="close-popup">&times;</div>
+            <h2>Báo Cáo Tồn Kho</h2>
+            <p>Nội dung báo cáo tồn kho sẽ được hiển thị ở đây</p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('quan-ly-san-pham').addEventListener('click', function() {
+            hideAllPopups();
+            document.getElementById('popup-quan-ly-san-pham').classList.add('show-popup');
+        });
+
+        document.getElementById('quan-ly-ton-kho').addEventListener('click', function() {
+            hideAllPopups();
+            document.getElementById('popup-quan-ly-ton-kho').classList.add('show-popup');
+        });
+
+        document.getElementById('nhap-xuat-hang').addEventListener('click', function() {
+            hideAllPopups();
+            document.getElementById('popup-nhap-xuat-hang').classList.add('show-popup');
+        });
+
+        document.getElementById('bao-cao-ton-kho').addEventListener('click', function() {
+            hideAllPopups();
+            document.getElementById('popup-bao-cao-ton-kho').classList.add('show-popup');
+        });
+
+        function hideAllPopups() {
+            document.querySelectorAll('.popup').forEach(function(element) {
+                element.classList.remove('show-popup');
+            });
+        }
+
+        document.querySelectorAll('.close-popup').forEach(function(element) {
+            element.addEventListener('click', function() {
+                element.parentNode.parentNode.classList.remove('show-popup');
+            });
+        });
+        // Xử lý sự kiện Nhập Xuất Hàng
+        document.getElementById('submit-transaction').addEventListener('click', function() {
+            const productName = document.getElementById('product-name').value;
+            const quantity = document.getElementById('quantity').value;
+            const actionType = document.getElementById('action-type').value;
+            const date = document.getElementById('date').value;
+
+            if (!productName || !quantity || !date) {
+                alert('Vui lòng điền đầy đủ thông tin!');
+                return;
+            }
+
+            alert(`Thao tác thành công: ${actionType === 'nhap' ? 'Nhập' : 'Xuất'} ${quantity} ${productName} vào ngày ${date}`);
+        });
+    </script>
+</body>
+</html>
