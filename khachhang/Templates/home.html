@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Khách Hàng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            margin: 20px; 
+            background-color: #f0f4f8; 
+            color: #333; 
+        }
+        h1 { 
+            text-align: center; 
+            color: rgb(42, 1, 75);
+            margin-bottom: 20px; 
+            padding: 10px 0;
+            text-shadow: 1px 1px 2px rgb(217, 255, 0);
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            box-shadow: 0 4px 20px rgb(6, 6, 0);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td { 
+            padding: 12px; 
+            text-align: left; 
+            border: 1px solid #ddd; 
+        }
+        th { 
+            background-color: #e91e63; 
+            color: yellow; 
+            transition: background-color 0.3s;
+        }
+        th:hover {
+            background-color: #d81b60;
+        }
+        tr:hover { 
+            background-color: #f9fbe7; 
+        }
+        .button { 
+            padding: 10px 20px; 
+            margin: 5px; 
+            border: none; 
+            color: yellow; 
+            background-color: #4caf50; 
+            cursor: pointer; 
+            border-radius: 20px; 
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .button:hover { 
+            background-color:rgb(108, 160, 69); 
+            transform: scale(1.05);
+        }
+        /* Modal styles */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0, 0, 0, 0.7); 
+            padding-top: 60px; 
+        }
+        .modal-content { 
+            background-color: #fff; 
+            margin: 5% auto; 
+            padding: 20px; 
+            border: 1px solid #888; 
+            width: 80%; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        .close { 
+            color: #aaa;
+            float: right; 
+            font-size: 35px; 
+            font-weight: bold; 
+        }
+        .close:hover, .close:focus { 
+            color: #000; 
+            text-decoration: none; 
+            cursor: pointer; 
+        }
+        input[type="text"], input[type="email"], input[type="number"], input[type="date"], input[type="time"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="email"]:focus, input[type="number"]:focus, input[type="date"]:focus, input[type="time"]:focus {
+            border-color: #4caf50;
+            outline: none;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        #searchInput:focus {
+            border-color: #4caf50 outline: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>QUẢN LÝ KHÁCH HÀNG</h1>
+
+<input type="text" id="searchInput" placeholder="Tìm Kiếm Tên Khách Hàng..." onkeyup="searchCustomer(this.value)">
+
+<button class="button" onclick="openAddModal()"><i class="fas fa-plus"></i> Thêm Khách Hàng</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên</th>
+            <th>Email</th>
+            <th>Số Điện Thoại</th>
+            <th>Lịch Sử Đặt Sân</th>
+            <th>Điểm Thưởng</th>
+            <th>Thanh Toán</th>
+            <th>Hành Động</th>
+        </tr>
+    </thead>
+    <tbody id="customerTable">
+        <tr>
+            <td>1</td>
+            <td>Nguyễn Văn A</td>
+            <td>nguyenvana@example.com</td>
+            <td>0123456789</td>
+            <td>Đặt sân A vào 2023-10-01 lúc 10:00, Đặt sân B vào 2023-10-02 lúc 11:00</td>
+            <td>100</td>
+            <td>Đã thanh toán</td>
+            <td>
+                <button class="button" onclick="openEditModal(1)"><i class="fas fa-edit"></i> Sửa</button>
+                <button class="button" onclick="deleteCustomer(1)"><i class="fas fa-trash"></i> Xóa</button>
+            </td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Trần Thị B</td>
+            <td>tranthib@example.com</td>
+            <td>0987654321</td>
+            <td>Đặt sân C vào 2023-10-03 lúc 12:00</td>
+            <td>50</td>
+            <td>Chưa thanh toán</td>
+            <td>
+                <button class="button" onclick="openEditModal(2)"><i class="fas fa-edit"></i> Sửa</button>
+                <button class="button" onclick="deleteCustomer(2)"><i class="fas fa-trash"></i> Xóa</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Modal for adding customer -->
+<div id="addCustomerModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddModal()">&times;</span>
+        <h2>Thêm Khách Hàng</h2>
+        <input type="hidden" id="addEditId">
+        <label for="addName">Tên:</label>
+        <input type="text" id="addName" required><br>
+        <label for="addEmail">Email:</label>
+        <input type="email" id="addEmail" required><br>
+        <label for="addPhone">Số Điện Thoại:</label>
+        <input type="text" id="addPhone" required><br>
+        <label for="addHistory">Lịch Sử Đặt Sân:</label>
+        <div id="addHistoryContainer">
+            <input type="text" id="addFieldName" placeholder="Tên sân" required>
+            <input type="date" id="addFieldDate" required>
+            <input type="time" id="addFieldTime" required>
+            <button class="button" onclick="addHistoryEntry()"><i class="fas fa-plus"></i> Thêm</button>
+        </div>
+        <div id="addHistoryList"></div>
+        <label for="addPayment">Thanh Toán:</label>
+        <input type="text" id="addPayment" required><br>
+        <label for="addPoints">Điểm Thưởng:</label>
+        <input type="number" id="addPoints" required><br>
+        <button class="button" onclick="saveNewCustomer()"><i class="fas fa-save"></i> Lưu</button>
+    </div>
+</div>
+
+<!-- Modal for editing customer -->
+<div id="editCustomerModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h2>Sửa Khách Hàng</h2>
+        <input type="hidden" id="editId">
+        <label for="editName">Tên:</label>
+        <input type="text" id="editName" required><br>
+        <label for="editEmail">Email:</label>
+        <input type="email" id="editEmail" required><br>
+        <label for="editPhone">Số Điện Thoại:</label>
+        <input type="text" id="editPhone" required><br>
+        <label for="editHistory">Lịch Sử Đặt Sân:</label>
+        <div id="editHistoryContainer"></div> 
+        <label for="editPayment">Thanh Toán:</label>
+        <input type="text" id="editPayment" required><br>
+        <label for="editPoints">Điểm Thưởng:</label>
+        <input type="number" id="editPoints" required><br>
+        <button class="button" onclick="saveEditedCustomer()"><i class="fas fa-save"></i> Lưu</button>
+    </div>
+</div>
+
+<script>
+    let customerId = 3; // Start ID for new customers
+    let customers = [
+        { id: 1, name: "Nguyễn Văn A", email: "nguyenvana@example.com", phone: "0123456789", history: [{ field: "Sân A", date: "2023-10-01", time: "10:00" }, { field: "Sân B", date: "2023-10-02", time: "11:00" }], payment: "Đã thanh toán", points: 100 },
+        { id: 2, name: "Trần Thị B", email: "tranthib@example.com", phone: "0987654321", history: [{ field: "Sân C", date: "2023-10-03", time: "12:00" }], payment: "Chưa thanh toán", points: 50 }
+    ];
+
+    function openAddModal() {
+        document.getElementById("addCustomerModal").style.display = "block";
+        document.getElementById("addName").value = '';
+        document.getElementById("addEmail").value = '';
+        document.getElementById("addPhone").value = '';
+        document.getElementById("addPayment").value = '';
+        document.getElementById("addPoints").value = '';
+        document.getElementById("addHistoryList").innerHTML = '';
+    }
+
+    function closeAddModal() {
+        document.getElementById("addCustomerModal").style.display = "none";
+    }
+
+    function addHistoryEntry() {
+        const field = document.getElementById("addFieldName").value;
+        const date = document.getElementById("addFieldDate").value;
+        const time = document.getElementById("addFieldTime").value;
+
+        if (field && date && time) {
+            const historyList = document.getElementById("addHistoryList");
+            const newEntry = document.createElement("div");
+            newEntry.textContent = `${field} vào ${date} lúc ${time}`;
+            historyList.appendChild(newEntry);
+            document.getElementById("addFieldName").value = '';
+            document.getElementById("addFieldDate").value = '';
+            document.getElementById("addFieldTime").value = '';
+        } else {
+            alert("Vui lòng điền đầy đủ thông tin lịch sử đặt sân.");
+        }
+    }
+
+    function saveNewCustomer() {
+        const name = document.getElementById("addName").value;
+        const email = document.getElementById("addEmail").value;
+        const phone = document.getElementById("addPhone").value;
+        const payment = document.getElementById("addPayment").value;
+        const points = document.getElementById("addPoints").value;
+
+        const historyEntries = Array.from(document.getElementById("addHistoryList").children).map(entry => {
+            const [field, dateTime] = entry.textContent.split(" vào ");
+            const [date, time] = dateTime.split(" lúc ");
+            return { field, date, time };
+        });
+
+        if (name && email && phone && payment && points && historyEntries.length > 0) {
+            const newCustomer = { id: customerId, name, email, phone, history: historyEntries, payment, points };
+            customers.push(newCustomer);
+            customerId++;
+            updateTable();
+            closeAddModal();
+            alert("Khách Hàng Đã Được Thêm Thành Công");
+        } else {
+            alert("Vui lòng điền đầy đủ thông tin.");
+        }
+    }
+
+    function openEditModal(id) {
+        const customer = customers.find(c => c.id === id);
+        if (customer) {
+            document.getElementById("editId").value = customer.id;
+            document.getElementById("editName").value = customer.name;
+            document.getElementById("editEmail").value = customer.email;
+            document.getElementById("editPhone").value = customer.phone;
+            document.getElementById("editPayment").value = customer.payment;
+            document.getElementById("editPoints").value = customer.points;
+
+            const editHistoryContainer = document.getElementById("editHistoryContainer");
+            editHistoryContainer.innerHTML = '';
+            customer.history.forEach((entry, index) => {
+                const historyEntry = document.createElement("div");
+                historyEntry.innerHTML = `
+                    ${entry.field} vào ${entry.date} lúc ${entry.time}
+                    <button class="button" onclick="editHistoryEntry(${customer.id}, ${index})"><i class="fas fa-edit"></i> Sửa</button>
+                `;
+                editHistoryContainer.appendChild(historyEntry);
+            });
+
+            document.getElementById("editCustomerModal").style.display = "block";
+        } else {
+            alert("Khách hàng không tồn tại.");
+        }
+    }
+
+    function editHistoryEntry(customerId, historyIndex) {
+        const customer = customers.find(c => c.id === customerId);
+        if (customer) {
+            const entry = customer.history[historyIndex];
+            const newField = prompt("Sửa tên sân:", entry.field);
+            const newDate = prompt("Sửa ngày:", entry.date);
+            const newTime = prompt("Sửa giờ:", entry.time);
+
+            if (newField && newDate && newTime) {
+                entry.field = newField;
+                entry.date = newDate;
+                entry.time = newTime;
+                updateTable();
+            } else {
+                alert("Vui lòng điền đầy đủ thông tin.");
+            }
+        }
+    }
+
+    function closeEditModal() {
+        document.getElementById("editCustomerModal").style.display = "none";
+    }
+
+    function saveEditedCustomer() {
+        const id = document.getElementById("editId").value;
+        const name = document.getElementById("editName").value;
+        const email = document.getElementById("editEmail").value;
+        const phone = document.getElementById("editPhone").value;
+        const payment = document.getElementById("editPayment").value;
+        const points = document.getElementById("editPoints").value;
+
+        const customer = customers.find(c => c.id == id);
+        if (customer) {
+            customer.name = name;
+            customer.email = email;
+            customer.phone = phone;
+            customer.payment = payment;
+            customer.points = points;
+            updateTable();
+            closeEditModal();
+            alert("Thông Tin Được Sửa Thành Công");
+        } else {
+            alert("Khách hàng không tồn tại.");
+        }
+    }
+
+    function deleteCustomer(id) {
+        if (confirm("Bạn có chắc chắn muốn xóa khách hàng với ID: " + id + "?")) {
+            customers = customers.filter(c => c.id !== id);
+            updateTable();
+            alert("Khách Hàng Đã Được Xóa Thành Công");
+        }
+    }
+
+    function updateTable() {
+        const tableBody = document.getElementById("customerTable");
+        tableBody.innerHTML = '';
+        customers.forEach(customer => {
+            const historyText = customer.history.map(entry => `${entry.field} vào ${entry.date} lúc ${entry.time}`).join(", ");
+            const newRow = tableBody.insertRow();
+            newRow.innerHTML = `
+                <td>${customer.id}</td>
+                <td>${customer.name}</td>
+                <td>${customer.email}</td>
+                <td>${customer.phone}</td>
+                <td>${historyText}</td>
+                <td>${customer.points}</td>
+                <td>${customer.payment}</td>
+                <td>
+                    <button class="button" onclick="openEditModal(${customer.id})"><i class="fas fa-edit"></i> Sửa</button>
+                    <button class="button" onclick="deleteCustomer(${customer.id})"><i class="fas fa-trash"></i> Xóa</button>
+                </td>
+            `;
+        });
+    }
+
+    function searchCustomer(searchInput) {
+        const tableBody = document.getElementById("customerTable");
+        tableBody.innerHTML = '';
+        customers.forEach(customer => {
+            if (customer.name.toLowerCase().includes(searchInput.toLowerCase()) || 
+                customer.email.toLowerCase().includes(searchInput.toLowerCase()) || 
+                customer.phone.toLowerCase().includes(searchInput.toLowerCase())) {
+                const historyText = customer.history.map(entry => `${entry.field} vào ${entry.date} lúc ${entry.time}`).join(", ");
+                const newRow = tableBody.insertRow();
+                newRow.innerHTML = `
+                    <td>${customer.id}</td>
+                    <td>${customer.name}</td>
+                    <td>${customer.email}</td>
+                    <td>${customer.phone}</td>
+                    <td>${historyText}</td>
+                    <td>${customer.points}</td>
+                    <td>${customer.payment}</td>
+                    <td>
+                        <button class="button" onclick="openEditModal(${customer.id})"><i class="fas fa-edit"></i> Sửa</button>
+                        <button class="button" onclick="deleteCustomer(${customer.id})"><i class="fas fa-trash"></i> Xóa</button>
+                    </td>
+                `;
+            }
+        });
+    }
+</script>
+</body>
+</html>
